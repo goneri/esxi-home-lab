@@ -1,0 +1,10 @@
+---
+- name: Delete potential existing VM
+  vmware_guest:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    folder: /
+    name: '{{ esxi_instance_name }}'
+    state: absent
+    force: true

@@ -1,0 +1,3 @@
+esxi_instance_memory: 4096
+esxi_instance_cpus: 1
+esxi_instance_image: esxi-6.7.0.qcow2

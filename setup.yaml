@@ -1,0 +1,46 @@
+- hosts: localhost
+  vars:
+    vcenter_hostname: 192.168.1.40
+    vcenter_username: root
+    vcenter_password: root
+    esxi_hostname: localhost.localdomain
+    nfs_path: '/srv/esx_lab'
+    nfs_server_ip: 192.168.1.4
+  tasks:
+    - include_role:
+        name: esxi_instance
+      vars:
+        esxi_instance_name: esxi-1
+        esxi_instance_ip_address: 192.168.1.23
+    - include_role:
+        name: esxi_instance
+      vars:
+        esxi_instance_name: esxi-2
+        esxi_instance_ip_address: 192.168.1.24
+    - include_role:
+        name: esxi_instance
+      vars:
+        esxi_instance_name: esxi-3
+        esxi_instance_ip_address: 192.168.1.25
+    - include_role:
+        name: esxi_instance
+      vars:
+        esxi_instance_name: esxi-4
+        esxi_instance_ip_address: 192.168.1.26
+    - include_role:
+        name: esxi_instance
+      vars:
+        esxi_instance_name: esxi-5
+        esxi_instance_ip_address: 192.168.1.27
+    - include_role:
+        name: esxi_instance
+      vars:
+        esxi_instance_name: esxi-6
+        esxi_instance_ip_address: 192.168.1.28
+    - include_role:
+        name: esxi_instance
+      vars:
+        esxi_instance_memory: 16384
+        esxi_instance_ip_address: 192.168.1.29
+        esxi_instance_cpus: 2
+        esxi_instance_name: esxi-vsphere

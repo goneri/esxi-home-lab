@@ -1,0 +1,5 @@
+---
+- import_tasks: destroy.yaml
+- import_tasks: prepare_cloud_init_iso.yaml
+- import_tasks: upload_iso.yaml
+- import_tasks: start.yaml

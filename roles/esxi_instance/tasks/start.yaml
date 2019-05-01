@@ -1,0 +1,51 @@
+---
+- name: Delete potential existing VM
+  vmware_guest:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    folder: /
+    name: '{{ esxi_instance_name }}'
+    state: absent
+- name: Create a ESXi host as a VM
+  vmware_guest:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    folder: /
+    name: '{{ esxi_instance_name }}'
+    state: poweredoff
+    guest_id: vmkernel65Guest
+    esxi_hostname: "{{ esxi_hostname }}"
+    datastore: nfs_1
+    is_template: true
+    hardware:
+      memory_mb: '{{ esxi_instance_memory }}'
+      num_cpus: '{{ esxi_instance_cpus }}'
+    cdrom:
+      type: iso
+      iso_path: '[nfs_1] cloud_init/{{ esxi_instance_name }}.iso'
+    disk:
+      - size_gb: 10
+        type: thin
+        state: present
+        datastore: nfs_1
+    networks:
+      - name: VM Network
+        device_type: vmxnet3
+      - name: VM Network
+        device_type: vmxnet3
+  register: esxi_instance_new_guest
+- name: Initialize the root disk with the ESXi image
+  command: 'qemu-img convert -f qcow2 -O raw {{ esxi_instance_image }} {{ esxi_instance_name }}/{{ esxi_instance_name }}-flat.vmdk'
+  args:
+    chdir: '{{ nfs_path }}'
+  delegate_to: nfs_server
+- name: Create a ESXi host as a VM
+  vmware_guest:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    folder: /
+    name: '{{ esxi_instance_name }}'
+    state: poweredon

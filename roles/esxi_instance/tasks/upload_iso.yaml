@@ -1,0 +1,12 @@
+---
+- vsphere_copy:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    #host: '{{ vcenter_hostname }}'
+    #login: '{{ vcenter_username }}'
+    #password: '{{ vcenter_password }}'
+    src: /tmp/workdir/{{ esxi_instance_name }}.iso
+    #datacenter: nfs_1
+    datastore: nfs_1
+    path: "cloud_init/{{ esxi_instance_name }}.iso"

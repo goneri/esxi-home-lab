@@ -1,0 +1,54 @@
+---
+- file:
+    path: /tmp/workdir
+    state: absent
+- file:
+    path: /tmp/workdir/image_dir/openstack/latest
+    state: directory
+- set_fact:
+    network_data:
+      links:
+        - id: interface0
+          type: phy
+      networks:
+        - id: private-ipv4
+          type: ipv4
+          link: interface0
+          ip_address: '{{ esxi_instance_ip_address }}'
+          netmask: 255.255.255.0
+      routes:
+        - network: 0.0.0.0
+          gateway: 192.168.1.1
+      services:
+        - type: dns
+          address: 8.8.8.8
+    meta_data:
+      availability_zone: nova
+      hostname: '{{ esxi_instance_name }}'
+      launch_index: 0
+      name: '{{ esxi_instance_name }}'
+      meta: {}
+      public_keys:
+        default: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyiXfE1zHKdj6odbysr917Cn88ov0VQaPJtLKJyMNuRYAeMOFQHd50X8JO4dfZbmSo3YdJlVfz9FLRxE64mqj9bkN8hPFbkTG2F1AWXGPON5cmm4uiLPfQkWhX/LnClrhzZpNtMJYs5AEFeDs0POijcRugZsQA+wvLi0lSlhOfkqtjAJKpPUwy1wrJFDdvqdQBjpNQh/LB8c15XfQV2JT/3NX26dQe8zvHhL6NvfhBnAikodYkBr7UjSl36CBk0cPebZMZEBBiHdo76xORVkpmqDvkhFByXXeAsvRa2YWS4wxpiNJFswlRhjubGau7LrT113WMcPvgYXHYHf2IYJWD goneri@redhat.com
+    user_data: |
+      #cloud-config
+      password: cloud
+- name: Prepare the network_data.json
+  copy:
+    content: |
+      {{ network_data | to_json }}
+    dest: /tmp/workdir/image_dir/openstack/latest/network_data.json
+- name: Prepare the meta_data.json
+  copy:
+    content: |
+      {{ meta_data | to_json }}
+    dest: /tmp/workdir/image_dir/openstack/latest/meta_data.json
+- name: Prepare the user-data file
+  copy:
+    content: "{{ user_data }}"
+    dest: /tmp/workdir/image_dir/openstack/latest/user-data
+- name: Generate the ISO image
+  command: genisoimage -output /tmp/workdir/{{ esxi_instance_name }}.iso -volid cidata -joliet -R image_dir
+  args:
+    chdir: /tmp/workdir
+    creates: /tmp/workdir/{{ esxi_instance_name }}.iso
